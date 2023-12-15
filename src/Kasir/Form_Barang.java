@@ -385,6 +385,7 @@ void Keluar() {
 
     private void BtnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnKeluarActionPerformed
         // TODO add your handling code here:
+        Keluar();
         new Form_Home().show();
         this.dispose();
     }//GEN-LAST:event_BtnKeluarActionPerformed
