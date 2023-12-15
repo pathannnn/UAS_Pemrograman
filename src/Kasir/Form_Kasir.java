@@ -400,7 +400,7 @@ void Keluar() {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel1.setText("Rp");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 10, 95, -1));
-        getContentPane().add(TanggalKasir, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 6, 224, -1));
+        getContentPane().add(TanggalKasir, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 224, -1));
 
         TblList.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -514,6 +514,8 @@ void Keluar() {
         // TODO add your handling code here:
         hapusSemuaData();
         refreshData();
+        TxtBayar.setText("0");
+        TxtDiskon.setText("0");
     }//GEN-LAST:event_BtnRefreshActionPerformed
 
     private void TxtTotalSatuanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TxtTotalSatuanActionPerformed
