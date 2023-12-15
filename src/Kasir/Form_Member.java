@@ -164,7 +164,13 @@ public class Form_Member extends javax.swing.JFrame {
 
 void Keluar() {
     int jawab = JOptionPane.showConfirmDialog(null, "Kamu yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-    if (jawab == 0) this.dispose();
+    
+    if (jawab == JOptionPane.YES_OPTION) {
+        new Form_Home().show();
+        this.dispose();
+    } else {
+        JOptionPane.showMessageDialog(null, "Pilihan dibatalkan");
+    }
 }
     
     /**
@@ -418,8 +424,7 @@ void Keluar() {
 
     private void BtnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnKeluarActionPerformed
         // TODO add your handling code here:
-        new Form_Home().show();
-        this.dispose(); 
+        Keluar();
     }//GEN-LAST:event_BtnKeluarActionPerformed
 
     private void BtnTambahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnTambahActionPerformed

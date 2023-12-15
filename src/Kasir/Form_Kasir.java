@@ -4,19 +4,13 @@
  */
 package Kasir;
 
-import com.sun.jdi.connect.spi.Connection;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-
+import java.text.SimpleDateFormat;
 /**
  *
  * @author DELL
@@ -187,7 +181,7 @@ public void tampilkanTotalQty() {
         totalHarga -= diskon;
         TxtDiskon.setText(String.format("%,.0f", diskon));
     } else {
-        totalHarga *= 1;
+        TxtDiskon.setText("0");
     }
 
     TxtJumlahHarga.setText(String.format("%,.0f", totalHarga)); 
@@ -197,9 +191,9 @@ public void tampilkanTotalQty() {
  public void hitungKembalian() {
     try {
         double bayar = Double.parseDouble(TxtBayar.getText().replaceAll("[^\\d.]", ""));
-        double diskon = Double.parseDouble(TxtDiskon.getText().replaceAll("[^\\d.]", ""));
+        double harga = Double.parseDouble(TxtJumlahHarga.getText().replaceAll("[^\\d.]", ""));
 
-        double kembalian = bayar - diskon;
+        double kembalian = bayar - harga;
         TxtKembali.setText(String.format("%,.0f", kembalian));
     } catch (NumberFormatException ex) {
         // Handle if parsing fails or other errors
@@ -236,10 +230,39 @@ public void tampilkanTotalQty() {
     TxtNoKasir.requestFocus();
     TxtNoKasir.setEnabled(true);
 }
-    void Keluar() {
+void Keluar() {
     int jawab = JOptionPane.showConfirmDialog(null, "Kamu yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-    if (jawab == 0) this.dispose();
+    
+    if (jawab == JOptionPane.YES_OPTION) {
+        new Form_Home().show();
+        this.dispose();
+    } else {
+        JOptionPane.showMessageDialog(null, "Pilihan dibatalkan");
+    }
 }
+
+
+   private void Riwayat() {
+    String sql = "INSERT INTO data_riwayat VALUES (?, ?, ?, ?, ?, ?,?)";
+    try {
+        PreparedStatement st = Koneksi_db.conn.prepareStatement(sql);
+
+        st.setString(1, TxtNoKasir.getText());
+        String tanggal = new SimpleDateFormat("yyyy-MM-dd").format(TanggalKasir.getDate());
+        st.setString(2, tanggal);
+        st.setString(3, TxtID.getText());
+        st.setString(4, TxtItemKasir.getText());
+        st.setString(5, TxtHargaKasir.getText());
+        st.setString(6, TxtQTYKasir.getText());
+        st.setString(7,TxtTotalSatuan.getText());
+        st.execute();
+        
+    } catch (SQLException | NumberFormatException e) {
+        JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+        System.out.println(e);
+    }
+}
+     
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -331,9 +354,9 @@ public void tampilkanTotalQty() {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(TxtID, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(TxtItemKasir, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(TxtItemKasir, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -343,12 +366,9 @@ public void tampilkanTotalQty() {
                         .addGap(16, 16, 16)
                         .addComponent(jLabel10)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(TxtTotalSatuan, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(242, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(BtnTambah)
-                        .addGap(266, 266, 266))))
+                        .addComponent(TxtTotalSatuan, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(BtnTambah))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -371,7 +391,7 @@ public void tampilkanTotalQty() {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 64, 1136, -1));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 64, 920, -1));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1048, 376, 82, -1));
@@ -444,7 +464,7 @@ public void tampilkanTotalQty() {
                 BtnKeluarActionPerformed(evt);
             }
         });
-        getContentPane().add(BtnKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 490, -1, -1));
+        getContentPane().add(BtnKeluar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 420, -1, -1));
 
         BtnRefresh.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         BtnRefresh.setText("Refresh");
@@ -479,6 +499,7 @@ public void tampilkanTotalQty() {
         SimpanKasir();
         this.requestFocus();
         refreshData();
+        Riwayat();
         clearData();  
         tampilkanTotalHarga();
         tampilkanTotalQty();
@@ -487,8 +508,6 @@ public void tampilkanTotalQty() {
     private void BtnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnKeluarActionPerformed
         // TODO add your handling code here:
         Keluar();
-        new Form_Home().show();
-        this.dispose();
     }//GEN-LAST:event_BtnKeluarActionPerformed
 
     private void BtnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRefreshActionPerformed

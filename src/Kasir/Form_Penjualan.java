@@ -4,6 +4,13 @@
  */
 package Kasir;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author DELL
@@ -15,8 +22,56 @@ public class Form_Penjualan extends javax.swing.JFrame {
      */
     public Form_Penjualan() {
         initComponents();
+        Koneksi_db.openConnection();
+        refreshData();
         setLocationRelativeTo(null);
     }
+    
+private void refreshData(){
+    Statement st;
+    java.sql.ResultSet rs;
+    try {
+        st = (Statement) Koneksi_db.conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        String sql = "SELECT * FROM `data_riwayat` ORDER BY Tanggal ASC";
+        st.execute(sql);
+        rs = st.getResultSet();
+
+        String[] header = {"No", "Tanggal", "Kode_Barang", "Item", "Harga", "QTY", "Total"};
+        int baris = 0;
+        rs.beforeFirst();
+        while (rs.next()) {
+            baris = rs.getRow();
+        }
+
+        Object[][] dtbl = new Object[baris][7];
+        rs.beforeFirst();
+        int curbaris = 0;
+        while (rs.next()) {
+            dtbl[curbaris][0] = rs.getString("No");
+            dtbl[curbaris][1] = rs.getString("Tanggal");
+            dtbl[curbaris][2] = rs.getString("Kode_barang");
+            dtbl[curbaris][3] = rs.getString("Item");
+            dtbl[curbaris][4] = "Rp" + rs.getString("Harga");
+            dtbl[curbaris][5] = rs.getString("QTY");
+            dtbl[curbaris][6] = "Rp" + rs.getString("Total");
+            curbaris++;
+        }
+            TblRiwayat.setModel(new DefaultTableModel(dtbl, header));
+    } catch (java.sql.SQLException e) {
+        JOptionPane.showMessageDialog(null, e.getMessage());
+    }
+}
+    
+void Keluar() {
+    int jawab = JOptionPane.showConfirmDialog(null, "Kamu yakin ingin keluar?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    
+    if (jawab == JOptionPane.YES_OPTION) {
+        new Form_Home().show();
+        this.dispose();
+    } else {
+        JOptionPane.showMessageDialog(null, "Pilihan dibatalkan");
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,6 +86,7 @@ public class Form_Penjualan extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         TblRiwayat = new javax.swing.JTable();
         BtnKeluar = new javax.swing.JButton();
+        BtnRefresh = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -52,6 +108,18 @@ public class Form_Penjualan extends javax.swing.JFrame {
         jScrollPane1.setViewportView(TblRiwayat);
 
         BtnKeluar.setText("Keluar");
+        BtnKeluar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnKeluarActionPerformed(evt);
+            }
+        });
+
+        BtnRefresh.setText("Refresh");
+        BtnRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnRefreshActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -59,7 +127,11 @@ public class Form_Penjualan extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(BtnKeluar)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(BtnRefresh)
+                        .addGap(18, 18, 18)
+                        .addComponent(BtnKeluar))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                             .addGap(305, 305, 305)
@@ -77,12 +149,24 @@ public class Form_Penjualan extends javax.swing.JFrame {
                 .addGap(26, 26, 26)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(BtnKeluar)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(BtnKeluar)
+                    .addComponent(BtnRefresh))
                 .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void BtnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnKeluarActionPerformed
+        // TODO add your handling code here:
+        Keluar();
+    }//GEN-LAST:event_BtnKeluarActionPerformed
+
+    private void BtnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnRefreshActionPerformed
+        // TODO add your handling code here:
+        refreshData();
+    }//GEN-LAST:event_BtnRefreshActionPerformed
 
     /**
      * @param args the command line arguments
@@ -121,6 +205,7 @@ public class Form_Penjualan extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BtnKeluar;
+    private javax.swing.JButton BtnRefresh;
     private javax.swing.JTable TblRiwayat;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
